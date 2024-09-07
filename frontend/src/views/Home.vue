@@ -1,6 +1,10 @@
+<script setup lang="ts">
+</script>
+
 <template>
-Home sdfsdfsdfsdf
-<h1>ola</h1>
+    <main>
+        Home
+    </main>
 </template>
 <style>
 h1 {

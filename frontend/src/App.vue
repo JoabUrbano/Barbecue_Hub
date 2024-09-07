@@ -1,13 +1,11 @@
 <script setup lang="ts">
+import NavBar from './views/NavBar.vue';
 </script>
 
 <template>
-<div id="app">
-  Barbecue Hub
-  <router-view />
-</div>
+  <div id="page" class="flex flex-col h-screen w-screen">
+    <NavBar />
+  
+    <router-view />
+  </div>
 </template>
-
-<style scoped>
-
-</style>

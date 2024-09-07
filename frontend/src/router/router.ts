@@ -8,7 +8,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Home',
     component: Home,
   },
-  // Proximas rotas
 ];
 
 const router = createRouter({
