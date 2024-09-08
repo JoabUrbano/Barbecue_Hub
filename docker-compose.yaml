@@ -1,0 +1,36 @@
+services:
+  frontend:
+    image: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 5173:5173
+    volumes:
+      - ./frontend:/app
+  backend:
+    image: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=barbecue
+      - POSTGRES_PASSWORD=barbecue
+      - POSTGRES_DB=barbecue
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U barbecue"]
+      interval: 2s
+      timeout: 1s
+      retries: 20
