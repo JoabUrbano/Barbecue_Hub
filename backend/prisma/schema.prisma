@@ -13,13 +13,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Table {
+model Place {
   id     String      @id @default(uuid())
   number Int
-  status TableStatus
+  status PlaceStatus
+  Order  Order[]
 }
 
-enum TableStatus {
+model Customer {
+  id        String  @id @default(uuid())
+  name      String
+  telephone String
+  email     String
+  password  String
+  Order     Order[]
+}
+
+model Order {
+  id            String          @id @default(uuid())
+  customer      Customer        @relation(fields: [customerId], references: [id])
+  customerId    String
+  place         Place           @relation(fields: [placeId], references: [id])
+  placeId       String
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  status        OrderStatus
+  Order_Product Order_Product[]
+}
+
+model Order_Product {
+  id          String  @id @default(uuid())
+  order       Order   @relation(fields: [orderId], references: [id])
+  orderId     String
+  product     Product @relation(fields: [productId], references: [id])
+  productId   String
+  observation String
+}
+
+model Product {
+  id            String          @id @default(uuid())
+  name          String
+  description   String
+  price         Float
+  Order_Product Order_Product[]
+}
+
+enum OrderStatus {
+  PENDING
+  CANCELED
+  FINISHED
+}
+
+enum PlaceStatus {
   AVAILABLE
   OCCUPIED
   RESERVED
