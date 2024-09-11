@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { CustomersRepository } from 'src/app/repositories/customer.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { CustomerEntity } from 'src/core/customers/customer.entity';
-
-export abstract class CustomersRepository {
-  abstract findMany(): Promise<CustomerEntity[]>;
-  abstract findOneByEmail(email: string): Promise<CustomerEntity>;
-}
+import { CustomerEntity } from 'src/domain/entities/customer.entity';
 
 @Injectable()
 export class CustomersRepositoryImpl implements CustomersRepository {
@@ -16,26 +12,13 @@ export class CustomersRepositoryImpl implements CustomersRepository {
       where: {
         email,
       },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        telephone: true,
-      },
     });
 
     return customer;
   }
 
   async findMany(): Promise<CustomerEntity[]> {
-    const customers = await this.prisma.customer.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        telephone: true,
-      },
-    });
+    const customers = await this.prisma.customer.findMany({});
 
     return customers;
   }

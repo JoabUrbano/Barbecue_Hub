@@ -4,21 +4,37 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthRepository } from 'src/core/auth/auth.repository';
-import {
-  CustomerEntity,
-  InputCustomarData,
-} from 'src/core/customers/customer.entity';
 import { JwtService } from '@nestjs/jwt';
-import { CryptService } from 'src/helpers/bcrypt';
+import { CryptProvider } from 'src/app/providers/crypt.provider';
+import { AuthRepository } from 'src/app/repositories/auth.repository';
+
+// Signin
+export type TSigninParams = {
+  email: string;
+  password: string;
+};
+
+export type TSigninResult = { accessToken: string; refreshToken: string };
+
+// Signup
+export type TSignupParams = {
+  name: string;
+  password: string;
+  email: string;
+  telephone: string;
+};
+
+export type TSignupResult = {
+  id: string;
+  name: string;
+  email: string;
+  telephone: string;
+};
 
 export abstract class AuthService {
-  abstract signin(
-    email: string,
-    password: string,
-  ): Promise<{ accessToken: string; refreshToken: string }>;
+  abstract signin(params: TSigninParams): Promise<TSigninResult>;
 
-  abstract signup(params: InputCustomarData): Promise<CustomerEntity>;
+  abstract signup(params: TSignupParams): Promise<TSignupResult>;
 }
 
 @Injectable()
@@ -26,21 +42,20 @@ export class AuthServiceImpl implements AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
-    private readonly cryptService: CryptService,
+    private readonly cryptProvider: CryptProvider,
   ) {}
 
-  async signin(
-    email: string,
-    password: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    const customer = await this.authRepository.findOneCustomerByEmail(email);
+  async signin(params: TSigninParams): Promise<TSigninResult> {
+    const customer = await this.authRepository.findOneCustomerByEmail({
+      email: params.email,
+    });
 
     if (!customer) {
       throw new NotFoundException('Cliente com este e-mail não encontrado');
     }
 
-    const isMatch = await this.cryptService.compare(
-      password,
+    const isMatch = await this.cryptProvider.compare(
+      params.password,
       customer.password,
     );
 
@@ -58,16 +73,16 @@ export class AuthServiceImpl implements AuthService {
     };
   }
 
-  async signup(params: InputCustomarData): Promise<CustomerEntity> {
-    const customer = await this.authRepository.findOneCustomerByEmail(
-      params.email,
-    );
+  async signup(params: TSignupParams): Promise<TSignupResult> {
+    const customer = await this.authRepository.findOneCustomerByEmail({
+      email: params.email,
+    });
 
     if (customer) {
       throw new ConflictException('Email já existente');
     }
 
-    const hashedPassword = await this.cryptService.hash(params.password);
+    const hashedPassword = await this.cryptProvider.hash(params.password);
 
     const newCustomer = await this.authRepository.createCustomer({
       email: params.email,

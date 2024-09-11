@@ -1,13 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as bcryptjs from 'bcryptjs';
-
-export abstract class CryptService {
-  abstract compare(password: string, hash: string): Promise<boolean>;
-  abstract hash(password: string): Promise<string>;
-}
+import { CryptProvider } from 'src/app/providers/crypt.provider';
 
 @Injectable()
-export class BcryptService implements CryptService {
+export class BcryptProvider implements CryptProvider {
   async compare(password: string, hash: string): Promise<boolean> {
     const isMatch = await bcryptjs.compare(password, hash);
 

@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
+
+import { PrismaService } from 'src/common/prisma/prisma.service';
+import { CustomersRepository } from 'src/app/repositories/customer.repository';
+import { CustomersRepositoryImpl } from 'src/infra/repositories/customers.repository';
+import { CustomersController } from 'src/app/modules/customers/customers.controller';
 import {
   CustomersService,
   CustomersServiceImpl,
-} from 'src/core/customers/customers.service';
-import { CustomersController } from 'src/core/customers/customers.controller';
-import {
-  CustomersRepository,
-  CustomersRepositoryImpl,
-} from 'src/core/customers/customers.repository';
-import { PrismaService } from 'src/common/prisma/prisma.service';
+} from 'src/app/modules/customers/customers.service';
 
 @Module({
   controllers: [CustomersController],
